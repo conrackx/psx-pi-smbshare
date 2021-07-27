@@ -61,9 +61,9 @@ EOF
 chmod 755 /home/pi/launchkai.sh
 
 # Install USB automount settings
-wget https://raw.githubusercontent.com/toolboc/psx-pi-smbshare/master/automount-usb.sh -O /home/pi/automount-usb.sh
-chmod 755 /home/pi/automount-usb.sh
-sudo /home/pi/automount-usb.sh
+# wget https://raw.githubusercontent.com/toolboc/psx-pi-smbshare/master/automount-usb.sh -O /home/pi/automount-usb.sh
+# chmod 755 /home/pi/automount-usb.sh
+# sudo /home/pi/automount-usb.sh
 
 # Set samba-init + ps3netsrv, wifi-to-eth-route, setup-wifi-access-point, and Xlink Kai to run on startup
 { echo -e "@reboot sudo bash /usr/local/bin/samba-init.sh\n@reboot sudo bash /home/pi/wifi-to-eth-route.sh && sudo bash /home/pi/setup-wifi-access-point.sh\n@reboot sudo bash /home/pi/launchkai.sh"; } | crontab -u pi -
