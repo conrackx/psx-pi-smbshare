@@ -11,32 +11,41 @@ fi
 #if /usr/local/bin/ps3netsrv++ exists
 if [ -f /usr/local/bin/ps3netsrv++ ]; then
   #restart ps3netsrv++
-  pkill ps3netsrv++
-  /usr/local/bin/ps3netsrv++ -d /share
+  pkill ps3netsrv++ || true
+  /usr/local/bin/ps3netsrv++ -d /share &
 fi
 
-sudo cat <<'EOF' | sudo tee /etc/samba/smb.conf
+sudo tee /etc/samba/smb.conf >/dev/null <<'EOF'
 [global]
-server min protocol = NT1
-workgroup = WORKGROUP
-usershare allow guests = yes
-map to guest = bad user
-allow insecure wide links = yes
+  server role = standalone server
+  server min protocol = NT1
+  map to guest = Bad User
+  workgroup = WORKGROUP
+  security = user
+  interfaces = 192.168.2.1/24
+  bind interfaces only = Yes
+  log file = /var/log/samba/log.%m
+  max log size = 1000
+  allow insecure wide links = yes
+
 [share]
-Comment = shared folder
-Path = /share
-Browseable = yes
-Writeable = Yes
-only guest = no
-create mask = 0777
-directory mask = 0777
-Public = yes
-Guest ok = yes
-force user = userplaceholder
-follow symlinks = yes
-wide links = yes
+  comment = PSX SMB Share
+  path = /share
+  browsable = yes
+  read only = no
+  guest ok = yes
+  create mask = 0777
+  directory mask = 0777
+  public = yes
+  force user = root
+  follow symlinks = yes
+  wide links = yes
 EOF
 
-#if you wish to create a samba user with password you can use the following:
-#sudo smbpasswd -a userplaceholder
-sudo /etc/init.d/smbd restart
+# Restart services
+if systemctl list-unit-files | grep -q '^smbd'; then
+  sudo systemctl restart smbd nmbd || true
+else
+  sudo service smbd restart || true
+  sudo service nmbd restart || true
+fi

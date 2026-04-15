@@ -6,13 +6,23 @@ You can see it in action in this video from [@versatileninja](https://github.com
 [![Play PS2 Games Over SMB Using Raspberry Pi 3b+ and psx-pi-smbshare (2019)](https://img.youtube.com/vi/Ilx5NYoUkNA/0.jpg)](https://www.youtube.com/watch?v=Ilx5NYoUkNA)
 
 ## Upgrading an existing install
-The following commands can be used to upgrade an existing psx-pi-smbshare device.  These instructions can also be used to convert an unsupported device into a psx-pi-smbshare (for example [Raspberry Pi4](https://github.com/toolboc/psx-pi-smbshare/issues/10) and potentially other devices running a debian based OS with an accessible ethernet port).
+The following commands can be used to upgrade an existing psx-pi-smbshare device. These instructions can also be used to convert an unsupported device into a psx-pi-smbshare.
 ```
 cd ~
-wget -O setup.sh https://raw.githubusercontent.com/toolboc/psx-pi-smbshare/master/setup.sh
+git clone https://github.com/conrackx/psx-pi-smbshare.git
+cd psx-pi-smbshare
 chmod 755 setup.sh
 ./setup.sh
 ```
+
+## Modernized Version Features (2026)
+This version of `psx-pi-smbshare` has been modernized with features from the `minimal` variant and general system improvements:
+
+*   **Non-Interactive Setup**: Run `./setup.sh --minimal` (or `-y`) to perform a fully automated installation with default settings (SMB share only, optimized for PS2 OPL).
+*   **Systemd Integration**: Legacy `crontab @reboot` entries have been replaced with modern **systemd services** (`psx-eth-ip`, `psx-samba-init`, `psx-route`, `psx-xlink`). This provides better reliability, logging, and dependency management.
+*   **Enhanced Security**: Includes a localized SMB firewall (`psx-smb-firewall.sh`) that restricts the insecure SMB1/NT1 protocol to the local ethernet segment (`192.168.2.0/24`), protecting your Pi from external SMB attacks.
+*   **Improved Network Binding**: Samba is now configured to bind only to the internal console network by default, further reducing the attack surface.
+*   **Interface Auto-Detection**: The setup script now automatically detects the appropriate ethernet interface (e.g., `eth0`, `enp1s0`) for various hardware versions.
 
 ## How it works
 psx-pi-smbshare is a preconfigured Raspbian based image for Raspberry Pi 1, 2, 3 and [4](https://www.youtube.com/watch?v=8qaJcbSye-E).  It runs a [Samba](https://en.wikipedia.org/wiki/Samba_(software)) share, a pi-compatible build of [ps3netsrv](https://github.com/dirkvdb/ps3netsrv--), and reconfigures the ethernet port to act as a router.  This gives low-latency, direct access to the Samba service through an ethernet cable connection between a PS2/PS3 and Raspberry Pi.  This configuration is achieved by running [setup.sh](/setup.sh).  A pre-supplied [image](https://github.com/toolboc/psx-pi-smbshare/releases/) can be applied directly to a Micro-SD card using something like [etcher.io](https://etcher.io/).  The image allows you to use the full available space on the SD card after the OS is first booted.
